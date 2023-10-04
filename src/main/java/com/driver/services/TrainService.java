@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -136,7 +137,21 @@ public class TrainService {
         //in problem statement)
         //You can also assume the seconds and milli seconds value will be 0 in a LocalTime format.
 
-        return null;
+        List<Train> trainList = trainRepository.findAll();
+        //creating list of all trains with their Id
+        List<Integer> trainIdList = new ArrayList<>();
+        for (Train train: trainList){
+            String []trainRoutArr = train.getRoute().split(",");
+            List<String> trainRoutList = Arrays.asList(trainRoutArr);
+            if (trainRoutList.contains(station.toString())){
+                LocalTime stationArrivalTime =
+                        train.getDepartureTime().plusHours(trainRoutList.indexOf(station.toString()));
+                if(stationArrivalTime.compareTo(startTime)>=0 && stationArrivalTime.compareTo(endTime)<=0){
+                    trainIdList.add(train.getTrainId());
+                }
+            }
+        }
+        return trainIdList;
     }
 
 }
