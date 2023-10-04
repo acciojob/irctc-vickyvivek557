@@ -82,8 +82,29 @@ public class TrainService {
         //throw new Exception("Train is not passing from this station");
         //  in a happy case we need to find out the number of such people.
 
-
-        return 0;
+        Optional<Train> trainOptional = trainRepository.findById(trainId);
+        if(!trainOptional.isPresent()){
+            throw new Exception();
+        }
+        Train train = trainOptional.get();
+        String[] route = train.getRoute().split(",");
+        boolean stationFound = false;
+        for(String s : route){
+            if(s.equals(station.toString())){
+                stationFound = true;
+            }
+        }
+        if(!stationFound){
+            throw new Exception("Train is not passing from this station");
+        }
+        int peopleOnboarding = 0;
+        for(Ticket ticket : train.getBookedTickets()){
+            if(ticket.getFromStation().equals(station)){
+                peopleOnboarding += ticket.getPassengersList().size();
+            }
+        }
+        //in happy case
+        return peopleOnboarding;
     }
 
     public Integer calculateOldestPersonTravelling(Integer trainId){
@@ -92,7 +113,19 @@ public class TrainService {
         //We need to find out the age of the oldest person that is travelling the train
         //If there are no people travelling in that train you can return 0
 
-        return 0;
+        Optional<Train> trainOptional = trainRepository.findById(trainId);
+        if(!trainOptional.isPresent()){
+            throw new RuntimeException();
+        }
+        Train train = trainOptional.get();
+        List<Ticket> tickets = train.getBookedTickets();
+        int maxAge = Integer.MIN_VALUE;
+        for(Ticket ticket : tickets){
+            for(Passenger passenger : ticket.getPassengersList()){
+                maxAge = Math.max(maxAge, passenger.getAge());
+            }
+        }
+        return maxAge;
     }
 
     public List<Integer> trainsBetweenAGivenTime(Station station, LocalTime startTime, LocalTime endTime){
