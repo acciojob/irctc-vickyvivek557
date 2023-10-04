@@ -93,8 +93,10 @@ public class TicketService {
         ticket.setTotalFare(totalFair);
         ticket.setTrain(train);
         Ticket savedTicket = ticketRepository.save(ticket);
+
         //Save the bookedTickets in the train Object
         train.getBookedTickets().add(savedTicket);
+
         //Also in the passenger Entity change the attribute bookedTickets by using the attribute bookingPersonId.
         Optional<Passenger> passengerOptional = passengerRepository.findById(bookTicketEntryDto.getBookingPersonId());
         Passenger bookingPassenger = passengerOptional.get();
